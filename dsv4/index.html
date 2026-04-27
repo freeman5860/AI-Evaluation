@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura — AI 冥想伴侣</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dusty-rose: #c4a5a5;
+    --sage: #a5b5a5;
+    --muted-blue: #9aaab4;
+    --warm-beige: #d4c9bf;
+    --soft-lavender: #b8aec2;
+    --off-white: #f5f1ed;
+    --charcoal: #3d3a3a;
+    --text-muted: #7a7570;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+    background: linear-gradient(170deg, #f9f6f2 0%, #f0ebe4 40%, #ede7e0 100%);
+    color: var(--charcoal);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Nav ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem clamp(1rem, 5vw, 4rem);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+  }
+  .logo span { color: var(--dusty-rose); }
+  .nav-cta {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--dusty-rose);
+    background: transparent;
+    color: var(--dusty-rose);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--dusty-rose); color: #fff; }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: clamp(3rem, 10vw, 7rem) clamp(1rem, 5vw, 2rem) clamp(2rem, 6vw, 4rem);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    background: rgba(196, 165, 165, 0.15);
+    color: var(--dusty-rose);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #b89595 0%, #8a9e8a 45%, #7e93a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    line-height: 1.7;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #c4a5a5, #b89595);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.25s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost {
+    padding: 0.75rem 2rem;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--charcoal);
+    font-weight: 500;
+    font-size: 0.95rem;
+    border: 1.5px solid #d0cbc5;
+    cursor: pointer;
+    transition: border-color 0.25s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--sage); }
+
+  /* ── Visual placeholder ── */
+  .hero-visual {
+    max-width: 600px;
+    margin: 3rem auto 0;
+    padding: 0 1rem;
+  }
+  .visual-card {
+    background: linear-gradient(160deg, rgba(196, 165, 165, 0.18), rgba(154, 170, 180, 0.12), rgba(165, 181, 165, 0.16));
+    border-radius: 2rem;
+    padding: 2.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .breath-circle {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--dusty-rose), var(--soft-lavender));
+    animation: breathe 4s ease-in-out infinite;
+    opacity: 0.7;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.35); opacity: 0.85; }
+  }
+  .visual-meta { text-align: left; }
+  .visual-meta .title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--charcoal);
+  }
+  .visual-meta .sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+  .wave-bars {
+    display: flex; gap: 3px; align-items: flex-end; margin-top: 0.5rem; height: 24px;
+  }
+  .wave-bars span {
+    width: 5px; border-radius: 3px;
+    background: linear-gradient(0deg, var(--sage), var(--muted-blue));
+    animation: wave 1.4s ease-in-out infinite;
+  }
+  .wave-bars span:nth-child(1) { height: 12px; animation-delay: 0s; }
+  .wave-bars span:nth-child(2) { height: 20px; animation-delay: 0.15s; }
+  .wave-bars span:nth-child(3) { height: 24px; animation-delay: 0.3s; }
+  .wave-bars span:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+  .wave-bars span:nth-child(5) { height: 22px; animation-delay: 0.6s; }
+  .wave-bars span:nth-child(6) { height: 14px; animation-delay: 0.75s; }
+  .wave-bars span:nth-child(7) { height: 18px; animation-delay: 0.9s; }
+  .wave-bars span:nth-child(8) { height: 10px; animation-delay: 1.05s; }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.35); }
+  }
+
+  /* ── Features ── */
+  .features {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 5vw, 4rem);
+  }
+  .features h2 {
+    text-align: center;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .features .subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    font-size: 0.95rem;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .feature-card {
+    background: rgba(255,255,255,0.5);
+    border-radius: 1.25rem;
+    padding: 2rem 1.75rem;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+  }
+  .feature-icon {
+    font-size: 2.25rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .feature-card h3 {
+    font-size: 1.1rem;
+    font-weight: 650;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+  }
+  .feature-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── Subscribe ── */
+  .subscribe {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1rem, 5vw, 2rem);
+    text-align: center;
+  }
+  .subscribe h2 {
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .subscribe .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+  }
+  .subscribe-form {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 420px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .subscribe-form input {
+    flex: 1 1 240px;
+    padding: 0.8rem 1.25rem;
+    border-radius: 999px;
+    border: 1.5px solid #ddd8d2;
+    background: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.25s;
+    font-family: inherit;
+  }
+  .subscribe-form input:focus { border-color: var(--dusty-rose); }
+  .subscribe-form input::placeholder { color: #c0b9b2; }
+  .subscribe-form button {
+    flex-shrink: 0;
+    padding: 0.8rem 1.75rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #b8aec2, #a598b0);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.25s;
+    font-family: inherit;
+  }
+  .subscribe-form button:hover { opacity: 0.85; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem 3rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  footer p { opacity: 0.7; }
+
+  /* ── responsive tweaks ── */
+  @media (max-width: 600px) {
+    .visual-card { padding: 1.75rem 1.25rem; gap: 1.25rem; }
+    .breath-circle { width: 60px; height: 60px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    nav { padding: 1rem 1.25rem; }
+    .subscribe-form { flex-direction: column; align-items: stretch; }
+    .subscribe-form button { width: 100%; }
+    .hero-btns { flex-direction: column; align-items: stretch; }
+    .btn-primary, .btn-ghost { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Aura<span>.</span></div>
+  <a href="#subscribe" class="nav-cta">抢先体验</a>
+</nav>
+
+<section class="hero">
+  <span class="hero-badge">AI 驱动的冥想体验</span>
+  <h1>
+    在纷扰中<br>
+    <span class="gradient-text">找回内心平静</span>
+  </h1>
+  <p>
+    Aura 通过 AI 实时感知你的情绪与呼吸节奏，为你生成专属冥想引导。每一天，都是与自我的深度对话。
+  </p>
+  <div class="hero-btns">
+    <a href="#subscribe" class="btn-primary">加入等候名单</a>
+    <a href="#features" class="btn-ghost">了解更多</a>
+  </div>
+  <div class="hero-visual">
+    <div class="visual-card">
+      <div class="breath-circle"></div>
+      <div class="visual-meta">
+        <div class="title">深呼吸 · 放松</div>
+        <div class="sub">跟随节奏慢慢吐息</div>
+        <div class="wave-bars">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <h2>为什么选择 Aura</h2>
+  <p class="subtitle">科技与正念的温柔相遇</p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🧠</span>
+      <h3>AI 情绪感知</h3>
+      <p>通过语音语调与心率变异性，Aura 实时感知你的情绪状态，动态调整冥想内容的节奏与声线。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🎵</span>
+      <h3>生成式音景</h3>
+      <p>每一次冥想都有独一无二的背景音景，融合白噪音、自然采样与合成音色，让每次练习都是全新的感官旅程。</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📊</span>
+      <h3>个人成长追踪</h3>
+      <p>精细记录专注时长、心率变化与情绪波动趋势，用可视化的方式看见自己向内探索的每一步成长。</p>
+    </div>
+  </div>
+</section>
+
+<section class="subscribe" id="subscribe">
+  <h2>抢先体验 Aura</h2>
+  <p class="subtitle">加入等候名单，产品上线第一时间通知你，还有限时免费体验资格。</p>
+  <form class="subscribe-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; alert('感谢订阅！Aura 上线时将第一时间通知你。')">
+    <input type="email" placeholder="输入你的邮箱地址" required>
+    <button type="submit">立即订阅</button>
+  </form>
+</section>
+
+<footer>
+  <p>&copy; 2026 Aura. Made with peace.</p>
+</footer>
+
+</body>
+</html>

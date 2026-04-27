@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura | AI Meditation</title>
+  <style>
+    :root {
+      --ink: #2f3230;
+      --muted: #6f746f;
+      --paper: #f6f2ec;
+      --panel: rgba(255, 252, 247, 0.72);
+      --line: rgba(86, 92, 85, 0.16);
+      --sage: #9aa894;
+      --clay: #c59c8f;
+      --mist: #b8c7c4;
+      --lavender: #b4a9bd;
+      --shadow: 0 24px 70px rgba(74, 72, 66, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 16% 16%, rgba(184, 199, 196, 0.52), transparent 30rem),
+        radial-gradient(circle at 84% 10%, rgba(197, 156, 143, 0.32), transparent 28rem),
+        linear-gradient(135deg, #f6f2ec 0%, #efebe3 46%, #eef1ec 100%);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      overflow: hidden;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .nav {
+      width: min(1120px, calc(100% - 40px));
+      height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(47, 50, 48, 0.12);
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(154, 168, 148, 0.65), rgba(180, 169, 189, 0.55));
+      box-shadow: 0 10px 30px rgba(92, 96, 88, 0.16);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .hero {
+      width: min(1120px, calc(100% - 40px));
+      min-height: calc(100vh - 76px);
+      margin: 0 auto;
+      padding: clamp(48px, 8vw, 96px) 0 clamp(56px, 8vw, 92px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+      align-items: center;
+      gap: clamp(44px, 7vw, 88px);
+    }
+
+    .hero-copy {
+      max-width: 680px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 252, 247, 0.52);
+      color: #69706a;
+      font-size: 0.9rem;
+      font-weight: 600;
+      backdrop-filter: blur(18px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(3.6rem, 10vw, 8rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    .gradient-text {
+      display: inline-block;
+      background: linear-gradient(100deg, #81927c 6%, #c09084 44%, #9e94aa 78%, #7f9995 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy h2 {
+      max-width: 610px;
+      margin: 24px 0 0;
+      font-size: clamp(1.32rem, 2.6vw, 2.2rem);
+      line-height: 1.25;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      max-width: 570px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.5vw, 1.12rem);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 34px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .button-primary {
+      color: #fbf8f2;
+      background: #3b403b;
+      box-shadow: 0 18px 38px rgba(47, 50, 48, 0.2);
+    }
+
+    .button-secondary {
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 247, 0.58);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .visual {
+      position: relative;
+      min-height: 520px;
+      display: grid;
+      place-items: center;
+    }
+
+    .aura-orbit {
+      position: relative;
+      width: min(100%, 430px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255, 252, 247, 0.95) 0 22%, rgba(255, 252, 247, 0.42) 23% 38%, transparent 39%),
+        conic-gradient(from 135deg, rgba(154, 168, 148, 0.64), rgba(184, 199, 196, 0.52), rgba(180, 169, 189, 0.58), rgba(197, 156, 143, 0.55), rgba(154, 168, 148, 0.64));
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .aura-orbit::before,
+    .aura-orbit::after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border: 1px solid rgba(47, 50, 48, 0.12);
+      border-radius: 50%;
+      transform: rotate(-18deg) scaleX(1.18);
+    }
+
+    .aura-orbit::after {
+      inset: 25%;
+      transform: rotate(28deg) scaleX(1.28);
+      border-color: rgba(47, 50, 48, 0.09);
+    }
+
+    .meditation-card {
+      position: absolute;
+      right: 0;
+      bottom: 34px;
+      width: min(78%, 290px);
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 252, 247, 0.72);
+      box-shadow: 0 22px 60px rgba(74, 72, 66, 0.14);
+      backdrop-filter: blur(20px);
+    }
+
+    .session-title {
+      margin: 0 0 12px;
+      font-weight: 700;
+    }
+
+    .session-meter {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(47, 50, 48, 0.1);
+    }
+
+    .session-meter span {
+      display: block;
+      width: 68%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--sage), var(--clay));
+    }
+
+    .session-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .features {
+      padding: clamp(56px, 9vw, 104px) 0;
+      background: rgba(255, 252, 247, 0.28);
+      border-block: 1px solid rgba(86, 92, 85, 0.1);
+    }
+
+    .section-inner {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .section-heading {
+      max-width: 640px;
+      margin-bottom: clamp(28px, 5vw, 46px);
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .section-heading p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .feature-card {
+      min-height: 260px;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 18px 46px rgba(74, 72, 66, 0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 34px;
+      border-radius: 50%;
+      background: rgba(154, 168, 148, 0.18);
+      font-size: 1.4rem;
+    }
+
+    .feature-card:nth-child(2) .feature-icon {
+      background: rgba(197, 156, 143, 0.2);
+    }
+
+    .feature-card:nth-child(3) .feature-icon {
+      background: rgba(180, 169, 189, 0.22);
+    }
+
+    .feature-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.22rem;
+      letter-spacing: 0;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .subscribe {
+      padding: clamp(60px, 9vw, 112px) 0;
+    }
+
+    .subscribe-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.72fr);
+      gap: clamp(24px, 5vw, 56px);
+      align-items: center;
+      padding: clamp(28px, 5vw, 52px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255, 252, 247, 0.78), rgba(238, 241, 236, 0.7)),
+        radial-gradient(circle at 84% 22%, rgba(180, 169, 189, 0.24), transparent 18rem);
+      box-shadow: var(--shadow);
+    }
+
+    .subscribe h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .subscribe p {
+      margin: 16px 0 0;
+      color: var(--muted);
+    }
+
+    .form {
+      display: flex;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 252, 247, 0.76);
+    }
+
+    .form input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      padding: 0 14px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .form input::placeholder {
+      color: #8b9088;
+    }
+
+    .form button {
+      flex: 0 0 auto;
+      min-height: 44px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .footer {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 0 0 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      .nav {
+        width: min(100% - 32px, 1120px);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        width: min(100% - 32px, 1120px);
+        min-height: auto;
+        grid-template-columns: 1fr;
+        padding-top: 42px;
+        text-align: left;
+      }
+
+      .visual {
+        min-height: 380px;
+      }
+
+      .aura-orbit {
+        width: min(88vw, 360px);
+      }
+
+      .meditation-card {
+        right: 50%;
+        bottom: 0;
+        transform: translateX(50%);
+        width: min(92%, 310px);
+      }
+
+      .section-inner,
+      .footer {
+        width: min(100% - 32px, 1120px);
+      }
+
+      .feature-grid,
+      .subscribe-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card {
+        min-height: 220px;
+      }
+
+      .subscribe-panel {
+        padding: 28px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .hero {
+        padding-bottom: 48px;
+      }
+
+      .hero-actions,
+      .form,
+      .footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .button,
+      .form button {
+        width: 100%;
+      }
+
+      .form {
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      .form input {
+        min-height: 44px;
+        padding: 0 10px;
+      }
+
+      .visual {
+        min-height: 330px;
+      }
+
+      .meditation-card {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="nav" aria-label="主导航">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true">◐</span>
+        <span>Aura</span>
+      </a>
+      <nav class="nav-links" aria-label="页面导航">
+        <a href="#features">特点</a>
+        <a href="#subscribe">订阅</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">AI-guided calm for everyday rituals</p>
+          <h1 id="hero-title"><span class="gradient-text">Aura</span></h1>
+          <h2>让每一次呼吸，都被温柔理解。</h2>
+          <p>Aura 使用 AI 感知你的情绪、睡眠与专注状态，为你生成更贴近当下的冥想练习、呼吸节奏和睡前放松音景。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#subscribe">加入等待名单</a>
+            <a class="button button-secondary" href="#features">查看特点</a>
+          </div>
+        </div>
+
+        <div class="visual" aria-hidden="true">
+          <div class="aura-orbit"></div>
+          <div class="meditation-card">
+            <p class="session-title">今日冥想 · 12 min</p>
+            <div class="session-meter"><span></span></div>
+            <div class="session-meta">
+              <span>呼吸平稳</span>
+              <span>68%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features" id="features" aria-labelledby="features-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <h2 id="features-title">更安静，也更懂你。</h2>
+            <p>从快速重置到深度睡眠，Aura 将冥想体验拆成清晰、自然、可坚持的日常片段。</p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">✦</div>
+              <h3>个性化引导</h3>
+              <p>根据你的时间、压力水平和目标，生成不同长度与语气的冥想流程。</p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">☾</div>
+              <h3>睡前音景</h3>
+              <p>混合低频环境声、轻柔提示与渐弱节奏，帮助身体自然进入休息状态。</p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon" aria-hidden="true">◌</div>
+              <h3>情绪记录</h3>
+              <p>用简短记录捕捉情绪变化，形成更清晰的身心趋势和练习建议。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="subscribe" id="subscribe" aria-labelledby="subscribe-title">
+        <div class="section-inner">
+          <div class="subscribe-panel">
+            <div>
+              <h2 id="subscribe-title">获取 Aura 的早期体验邀请。</h2>
+              <p>订阅后，我们会在内测开放时发送邀请，并分享每周一封简短的正念练习。</p>
+            </div>
+            <form class="form" action="#" method="post">
+              <label class="sr-only" for="email">邮箱地址</label>
+              <input id="email" name="email" type="email" placeholder="your@email.com" autocomplete="email" required>
+              <button class="button button-primary" type="submit">订阅</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 Aura Meditation</span>
+      <span>Designed for quiet minds.</span>
+    </footer>
+  </div>
+</body>
+</html>
