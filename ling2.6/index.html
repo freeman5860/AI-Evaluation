@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura — AI 冥想 · 归于平静</title>
+    <style>
+        /* ========== CSS Reset & Base ========== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f2ed;
+            --bg-soft: #faf8f4;
+            --fg: #5c534a;
+            --fg-muted: #9a8f85;
+            --accent: #c9a88a;
+            --accent-light: #e5d9cf;
+            --card: #ffffff;
+            --border: #e8e3dd;
+            --shadow: rgba(92, 83, 74, 0.08);
+            --shadow-lg: rgba(92, 83, 74, 0.12);
+            --radius: 16px;
+            --radius-lg: 24px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ========== Background Atmosphere ========== */
+        .bg-atmosphere {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-atmosphere::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(201, 168, 138, 0.15) 0%, transparent 60%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-atmosphere::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(197, 181, 165, 0.1) 0%, transparent 60%);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.05); }
+        }
+
+        /* ========== Container ========== */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ========== Navigation ========== */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 0;
+            position: relative;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--fg);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #fff;
+            stroke-width: 2.5;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--fg-muted);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 400;
+            transition: color 0.25s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--fg);
+        }
+
+        .nav-cta {
+            display: none;
+        }
+
+        /* ========== Hero Section ========== */
+        .hero {
+            padding: 80px 0 100px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 14px;
+            color: var(--fg-muted);
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #a8c4a0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+
+        .hero-title {
+            font-size: clamp(36px, 8vw, 64px);
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--fg) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-stroke: 1px var(--fg);
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(16px, 3vw, 18px);
+            color: var(--fg-muted);
+            max-width: 520px;
+            margin: 0 auto 40px;
+            font-weight: 300;
+        }
+
+        .hero-emoji {
+            font-size: 64px;
+            display: block;
+            margin: 40px 0;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            font-size: 15px;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #b8956e 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--shadow-lg);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--fg);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* ========== Features Section ========== */
+        .features {
+            padding: 60px 0 100px;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(28px, 5vw, 36px);
+            font-weight: 400;
+            color: var(--fg);
+            letter-spacing: -0.5px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px var(--shadow);
+            border-color: transparent;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--bg-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--accent-light);
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--fg);
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: var(--fg-muted);
+            line-height: 1.7;
+        }
+
+        /* ========== CTA / Newsletter Section ========== */
+        .newsletter {
+            padding: 60px 0 100px;
+            position: relative;
+        }
+
+        .newsletter-card {
+            background: linear-gradient(135deg, var(--card) 0%, var(--bg-soft) 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 56px 40px;
+            text-align: center;
+            max-width: 520px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .newsletter-card::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: calc(var(--radius-lg) - 4px);
+            border: 1px solid transparent;
+            background: linear-gradient(135deg, var(--accent-light), transparent) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .newsletter-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--fg);
+            margin-bottom: 12px;
+        }
+
+        .newsletter-desc {
+            font-size: 15px;
+            color: var(--fg-muted);
+            margin-bottom: 28px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            color: var(--fg);
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--fg-muted);
+        }
+
+        .newsletter-input:focus {
+            border-color: var(--accent);
+            background: var(--card);
+        }
+
+        .newsletter-btn {
+            padding: 16px 28px;
+            font-size: 15px;
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--accent) 0%, #b8956e 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-lg);
+        }
+
+        .newsletter-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ========== Footer ========== */
+        footer {
+            padding: 32px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 24px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--fg-muted);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            nav {
+                padding: 20px 0;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-cta {
+                display: inline-flex;
+            }
+
+            .hero {
+                padding: 60px 0 80px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .newsletter-btn {
+                width: 100%;
+            }
+        }
+
+        /* ========== Entrance Animations ========== */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- 背景氛围层 -->
+    <div class="bg-atmosphere"></div>
+
+    <!-- 导航 -->
+    <nav class="container">
+        <a href="#" class="logo">
+            <span class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+            </span>
+            Aura
+        </a>
+        <div class="nav-links">
+            <a href="#features">特点</a>
+            <a href="#about">关于</a>
+            <a href="#pricing">定价</a>
+        </div>
+        <a href="#newsletter" class="btn btn-primary nav-cta">开始冥想</a>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="animate-fade-up">
+                <div class="hero-badge">全新版本  ·  AI 智能冥想已上线</div>
+            </div>
+            <h1 class="hero-title animate-fade-up delay-1">
+                <span>在喧嚣中</span><br>
+                <span>遇见平静</span>
+            </h1>
+            <p class="hero-subtitle animate-fade-up delay-2">
+                Aura 通过人工智能技术，为你定制专属的冥想体验。<br>
+                每天 10 分钟，找回内在的平衡与力量。
+            </p>
+            <div class="hero-emoji animate-fade-up delay-3">🧘</div>
+            <div class="hero-buttons animate-fade-up delay-4">
+                <a href="#newsletter" class="btn btn-primary">免费开始</a>
+                <a href="#features" class="btn btn-secondary">了解更多</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header animate-fade-up">
+                <span class="section-label">核心功能</span>
+                <h2 class="section-title">让冥想成为日常</h2>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card animate-fade-up delay-1">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.33A2.5 2.5 0 0 1 9.5 2Z"/>
+                            <path d="M14.5 2A2.5 2.5 0 0 1 17 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.33A2.5 2.5 0 0 1 14.5 2Z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">AI 智能引导</h3>
+                    <p class="feature-desc">
+                        根据你的情绪状态与生活节奏，动态调整冥想内容与语音语调，让每一次呼吸都恰到好处。
+                    </p>
+                </article>
+                <article class="feature-card animate-fade-up delay-2">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="m4.93 4.93 2.83 2.83"/>
+                            <path d="m16.24 16.24 2.83 2.83"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                            <path d="m4.93 19.07 2.83-2.83"/>
+                            <path d="m16.24 7.76 2.83-2.83"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">个性化记录</h3>
+                    <p class="feature-desc">
+                        自动追踪冥想频率、心率变化与专注度，生成可视化的进度报告，看见自己的点滴成长。
+                    </p>
+                </article>
+                <article class="feature-card animate-fade-up delay-3">
+                    <div class="feature-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" x2="9.01" y1="9" y2="9"/>
+                            <line x1="15" x2="15.01" y1="9" y2="9"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">沉浸式场景</h3>
+                    <p class="feature-desc">
+                        搭配自然音效与极简视觉，从森林细雨到深海微光，在方寸之间构建属于你的宁静世界。
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter / CTA Section -->
+    <section class="newsletter" id="newsletter">
+        <div class="container">
+            <div class="newsletter-card animate-fade-up">
+                <h3 class="newsletter-title">开启你的平静之旅</h3>
+                <p class="newsletter-desc">订阅获取 7 天免费体验，了解最新的冥想指南与心灵成长课程。</p>
+                <form class="newsletter-form" onsubmit="return handleSubscribe(event)">
+                    <input type="email" class="newsletter-input" placeholder="输入你的邮箱地址" required aria-label="邮箱地址">
+                    <button type="submit" class="newsletter-btn">立即订阅</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-divider"></div>
+            <p class="footer-text">© 2026 Aura. All rights reserved. · 用技术温暖心灵</p>
+        </div>
+    </footer>
+
+    <script>
+        // 表单提交处理
+        function handleSubscribe(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+
+            btn.textContent = '已发送 ✓';
+            btn.style.background = '#a8c4a0';
+
+            console.log('订阅邮箱:', email);
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                e.target.reset();
+            }, 2000);
+
+            return false;
+        }
+
+        // 滚动淡入动画
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
